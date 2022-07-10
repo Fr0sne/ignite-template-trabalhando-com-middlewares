@@ -11,10 +11,10 @@ const users = [];
 
 function checksExistsUserAccount(request, response, next) {
   const { username } = request.headers;
-  // if (!username)
-  //   return response.status(400).send({
-  //     error: "No username provider in headers.",
-  //   });
+  if (!username)
+    return response.status(400).send({
+      error: "No username provider in headers.",
+    });
   const user = users.find((user) => user.username == username);
   if (!user) {
     return response.status(404).send({
@@ -23,18 +23,13 @@ function checksExistsUserAccount(request, response, next) {
   }
   request.user = user;
   return next();
-  // if (users.some((user) => user.username == username)) {
-  //   request.user = users.find((user) => user.username == username);
-  //   return next();
-  // }
 
   // Complete aqui
 }
 
 function checksCreateTodosUserAvailability(request, response, next) {
   const user = request.user;
-  if (user.pro) return next();
-  if (!user.pro && user.todos.length < 10) {
+  if (user.todos.length < 10 || user.pro) {
     return next();
   }
   return response.status(403).send({
